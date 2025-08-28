@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Encuesta – Sesión del Viernes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .poll-box {
+      background: white;
+      padding: 25px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 360px;
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 18px;
+    }
+    label {
+      display: block;
+      margin: 10px 0;
+      cursor: pointer;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      background: #28a745;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover:enabled {
+      background: #218838;
+    }
+    button:disabled {
+      background: #a9a9a9;
+      cursor: not-allowed;
+    }
+    .results {
+      margin-top: 22px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="poll-box">
+    <h2>¿Irás a la sesión de este Viernes?</h2>
+    <form id="pollForm">
+      <label>
+        <input type="radio" name="vote" value="yes" /> Iré a la sesión de este Viernes
+      </label>
+      <label>
+        <input type="radio" name="vote" value="no" /> No iré a la sesión de este Viernes
+      </label>
+      <button type="submit" id="voteButton">Votar</button>
+    </form>
+
+    <div class="results" id="results" style="display:none;">
+      <h3>Resultados:</h3>
+      <p id="yesVotes">Iré: 0 votos</p>
+      <p id="noVotes">No iré: 0 votos</p>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('pollForm');
+    const voteButton = document.getElementById('voteButton');
+    const resultsDiv = document.getElementById('results');
+    const yesVotesEl = document.getElementById('yesVotes');
+    const noVotesEl = document.getElementById('noVotes');
+
+    let votesYes = parseInt(localStorage.getItem('votesYes')) || 0;
+    let votesNo = parseInt(localStorage.getItem('votesNo')) || 0;
+    const hasVoted = localStorage.getItem('hasVoted') === 'true';
+
+    function renderResults() {
+      resultsDiv.style.display = 'block';
+      yesVotesEl.textContent = `Iré: ${votesYes} voto${votesYes === 1 ? '' : 's'}`;
+      noVotesEl.textContent = `No iré: ${votesNo} voto${votesNo === 1 ? '' : 's'}`;
+    }
+
+    function disableVoting() {
+      voteButton.disabled = true;
+      form.querySelectorAll('input[name="vote"]').forEach(el => el.disabled = true);
+    }
+
+    if (votesYes || votesNo) {
+      renderResults();
+    }
+    if (hasVoted) {
+      disableVoting();
+    }
+
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      if (hasVoted) return;
+
+      const choice = document.querySelector('input[name="vote"]:checked');
+      if (!choice) {
+        alert('Por favor selecciona una opción antes de votar.');
+        return;
+      }
+
+      if (choice.value === 'yes') {
+        votesYes++;
+        localStorage.setItem('votesYes', votesYes);
+      } else {
+        votesNo++;
+        localStorage.setItem('votesNo', votesNo);
+      }
+
+      localStorage.setItem('hasVoted', 'true');
+      renderResults();
+      disableVoting();
+    });
+  </script>
+</body>
+</html>
