@@ -41,9 +41,9 @@ app.post("/vote", (req, res) => {
   });
 });
 
-// Fallback: serve index.html for root requests
+// Fallback: serve mainpage for root requests
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(__dirname, "public", "mainpage"));
 });
 
 app.listen(PORT, () => {
