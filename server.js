@@ -43,7 +43,7 @@ app.post("/vote", (req, res) => {
 
 // Fallback: serve mainpage for root requests
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "mainpage"));
+  res.sendFile(path.join(__dirname, "DNDproject", "mainpage"));
 });
 
 app.listen(PORT, () => {
