@@ -52,10 +52,6 @@ app.post("/reset", (req, res) => {
   });
 });
 
-// --- ADD THIS ---
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
 
 // Optional: catch-all for other routes
 app.get(/^\/.*/, (req, res) => {
