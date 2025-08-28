@@ -21,6 +21,7 @@
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
     const resultsDiv = document.getElementById('results');
+    const resetVoteBtn = document.getElementById('resetVoteBtn');
 
     async function fetchVotes() {
       const res = await fetch('/votes');
@@ -66,6 +67,23 @@
       fetchVotes();
       if (hasVoted()) disableButtons();
     };
+    resetVoteBtn.addEventListener('click', () => {
+  // Remove the "voted" flag
+  localStorage.removeItem('voted');
+
+  // Re-enable the vote buttons
+  yesBtn.disabled = false;
+  noBtn.disabled = false;
+
+  // Optionally, clear any selection
+  // (if you had radio buttons, you'd reset them here)
+
+  alert("Ahora puedes votar de nuevo!");
+});
   </script>
+  <button id="resetVoteBtn" style="background: #dc3545; color: white; margin-top: 10px;">
+  Reiniciar mi voto
+</button>
+
 </body>
 </html>
