@@ -23,13 +23,7 @@
     const resultsDiv = document.getElementById('results');
     const resetVoteBtn = document.getElementById('resetVoteBtn');
 
-     resetVoteBtn.addEventListener('click', () => {
-      // Remove the "voted" flag
-      localStorage.removeItem('voted');
-      //call function to enable buttons
-      enablebuttons()
-       alert("Ahora puedes votar de nuevo!");
-    });
+
     async function fetchVotes() {
       const res = await fetch('/votes');
       const data = await res.json();
@@ -64,7 +58,13 @@
         disableButtons();
       }
     });
-
+     resetVoteBtn.addEventListener('click', () => {
+      // Remove the "voted" flag
+      localStorage.removeItem('voted');
+      //call function to enable buttons
+      enablebuttons()
+       alert("Ahora puedes votar de nuevo!");
+    });
     noBtn.addEventListener('click', () => {
       if (!hasVoted()) {
         sendVote('no');
