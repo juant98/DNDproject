@@ -1,40 +1,51 @@
 const express = require("express");
 const fs = require("fs");
 const cors = require("cors");
+const path = require("path");
 
 const app = express();
+const PORT = 3000;
+
 app.use(cors());
 app.use(express.json());
 
-const DATA_PATH = "./votes.json";
+// Serve static files from the "public" folder
+app.use(express.static(path.join(__dirname, "public")));
 
-// Load or initialize counts
-function readCounts() {
-  if (!fs.existsSync(DATA_PATH)) return { yes: 0, no: 0 };
-  return JSON.parse(fs.readFileSync(DATA_PATH, "utf8"));
-}
+let votesFile = path.join(__dirname, "votes.json");
 
-function saveCounts(counts) {
-  fs.writeFileSync(DATA_PATH, JSON.stringify(counts), "utf8");
-}
-
-app.get("/poll", (req, res) => {
-  res.json(readCounts());
+// Get votes
+app.get("/votes", (req, res) => {
+  fs.readFile(votesFile, "utf8", (err, data) => {
+    if (err) {
+      return res.status(500).json({ error: "Error reading votes" });
+    }
+    res.json(JSON.parse(data));
+  });
 });
 
+// Submit vote
 app.post("/vote", (req, res) => {
-  const { option } = req.body;
-  const counts = readCounts();
-  if (option === "yes") counts.yes++;
-  else if (option === "no") counts.no++;
-  saveCounts(counts);
-  res.json(counts);
+  const choice = req.body.choice;
+  fs.readFile(votesFile, "utf8", (err, data) => {
+    if (err) return res.status(500).json({ error: "Error reading votes" });
+
+    let votes = JSON.parse(data);
+    if (choice === "yes") votes.yes++;
+    if (choice === "no") votes.no++;
+
+    fs.writeFile(votesFile, JSON.stringify(votes), (err) => {
+      if (err) return res.status(500).json({ error: "Error writing votes" });
+      res.json(votes);
+    });
+  });
 });
 
-app.post("/reset", (req, res) => {
-  const counts = { yes: 0, no: 0 };
-  saveCounts(counts);
-  res.json(counts);
+// Fallback: serve index.html for root requests
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-app.listen(3000, () => console.log("Backend listening at http://localhost:3000"));
+app.listen(PORT, () => {
+  console.log(`✅ Server running at http://localhost:${PORT}`);
+});
