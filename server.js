@@ -5,7 +5,6 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-
 // Path to votes file
 const votesFile = path.join(__dirname, "votes.json");
 
@@ -44,13 +43,23 @@ app.post("/vote", (req, res) => {
   });
 });
 
-// Reset votes (optional admin route)
+// Reset votes
 app.post("/reset", (req, res) => {
   const resetVotes = { yes: 0, no: 0 };
   fs.writeFile(votesFile, JSON.stringify(resetVotes, null, 2), (err) => {
     if (err) return res.status(500).json({ error: "Error resetting votes" });
     res.json(resetVotes);
   });
+});
+
+// --- ADD THIS ---
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Optional: catch-all for other routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(PORT, () => {
