@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 const votesFile = path.join(__dirname, "votes.json");
 
 app.use(express.json());
-app.use(express.static("public"));
+app.use(express.static("public1"));
 
 // Ensure votes.json exists with default values
 if (!fs.existsSync(votesFile)) {
@@ -54,13 +54,14 @@ app.post("/reset", (req, res) => {
 
 // --- ADD THIS ---
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public1', 'index.html'));
 });
 
 // Optional: catch-all for other routes
-app.get('/^\/.*$/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+app.get(/^\/.*/, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public1', 'index.html'));
 });
+
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
