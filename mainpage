@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Encuesta – Sesión del Viernes</title>
   <style>
     body {
@@ -17,7 +17,7 @@
       padding: 25px 30px;
       border-radius: 10px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      width: 360px;
+      width: 380px;
       text-align: center;
     }
     h2 {
@@ -50,6 +50,10 @@
       margin-top: 22px;
       text-align: left;
     }
+    #resetButton {
+      background: #dc3545;
+      margin-top: 12px;
+    }
   </style>
 </head>
 <body>
@@ -57,72 +61,68 @@
     <h2>¿Irás a la sesión de este Viernes?</h2>
     <form id="pollForm">
       <label>
-        <input type="radio" name="vote" value="yes" /> Iré a la sesión de este Viernes
+        <input type="radio" name="vote" value="yes"> Iré a la sesión de este Viernes
       </label>
       <label>
-        <input type="radio" name="vote" value="no" /> No iré a la sesión de este Viernes
+        <input type="radio" name="vote" value="no"> No iré a la sesión de este Viernes
       </label>
       <button type="submit" id="voteButton">Votar</button>
     </form>
 
-    <div class="results" id="results" style="display:none;">
+    <div class="results" id="results">
       <h3>Resultados:</h3>
       <p id="yesVotes">Iré: 0 votos</p>
       <p id="noVotes">No iré: 0 votos</p>
     </div>
+
+    <button id="resetButton">Reiniciar votos</button>
   </div>
 
   <script>
-    const form = document.getElementById('pollForm');
-    const voteButton = document.getElementById('voteButton');
-    const resultsDiv = document.getElementById('results');
-    const yesVotesEl = document.getElementById('yesVotes');
-    const noVotesEl = document.getElementById('noVotes');
+    const form = document.getElementById("pollForm");
+    const voteButton = document.getElementById("voteButton");
+    const yesVotesEl = document.getElementById("yesVotes");
+    const noVotesEl = document.getElementById("noVotes");
+    const resetButton = document.getElementById("resetButton");
 
-    let votesYes = parseInt(localStorage.getItem('votesYes')) || 0;
-    let votesNo = parseInt(localStorage.getItem('votesNo')) || 0;
-    const hasVoted = localStorage.getItem('hasVoted') === 'true';
-
-    function renderResults() {
-      resultsDiv.style.display = 'block';
-      yesVotesEl.textContent = `Iré: ${votesYes} voto${votesYes === 1 ? '' : 's'}`;
-      noVotesEl.textContent = `No iré: ${votesNo} voto${votesNo === 1 ? '' : 's'}`;
+    // Fetch current counts
+    async function fetchCounts() {
+      const res = await fetch("/poll");
+      const data = await res.json();
+      updateUI(data);
     }
 
-    function disableVoting() {
-      voteButton.disabled = true;
-      form.querySelectorAll('input[name="vote"]').forEach(el => el.disabled = true);
+    function updateUI(data) {
+      yesVotesEl.textContent = `Iré: ${data.yes} voto${data.yes === 1 ? "" : "s"}`;
+      noVotesEl.textContent = `No iré: ${data.no} voto${data.no === 1 ? "" : "s"}`;
     }
 
-    if (votesYes || votesNo) {
-      renderResults();
-    }
-    if (hasVoted) {
-      disableVoting();
-    }
-
-    form.addEventListener('submit', event => {
-      event.preventDefault();
-      if (hasVoted) return;
-
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
       const choice = document.querySelector('input[name="vote"]:checked');
       if (!choice) {
-        alert('Por favor selecciona una opción antes de votar.');
+        alert("Por favor selecciona una opción antes de votar.");
         return;
       }
-
-      if (choice.value === 'yes') {
-        votesYes++;
-        localStorage.setItem('votesYes', votesYes);
-      } else {
-        votesNo++;
-        localStorage.setItem('votesNo', votesNo);
-      }
-
-      localStorage.setItem('hasVoted', 'true');
-      renderResults();
-      disableVoting();
+      const res = await fetch("/vote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ option: choice.value })
+      });
+      const data = await res.json();
+      updateUI(data);
+      form.reset();
     });
+
+    resetButton.addEventListener("click", async () => {
+      if (!confirm("¿Seguro que quieres reiniciar la encuesta?")) return;
+      const res = await fetch("/reset", { method: "POST" });
+      const data = await res.json();
+      updateUI(data);
+    });
+
+    // Load counts on page load
+    fetchCounts();
   </script>
 </body>
 </html>
