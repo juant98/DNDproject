@@ -2,127 +2,102 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Encuesta – Sesión del Viernes</title>
+  <title>Poll - Sesión del Viernes</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f0f2f5;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .poll-box {
-      background: white;
-      padding: 25px 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      width: 380px;
       text-align: center;
+      margin: 50px;
+      background: #f4f4f9;
     }
-    h2 {
-      margin-bottom: 18px;
-    }
-    label {
-      display: block;
-      margin: 10px 0;
-      cursor: pointer;
+    h1 {
+      color: #333;
     }
     button {
-      margin-top: 15px;
-      padding: 10px 18px;
-      border: none;
-      border-radius: 8px;
-      background: #28a745;
-      color: white;
-      font-size: 15px;
+      margin: 10px;
+      padding: 12px 24px;
+      font-size: 16px;
       cursor: pointer;
-      transition: background 0.3s;
-    }
-    button:hover:enabled {
-      background: #218838;
+      border: none;
+      border-radius: 5px;
+      background: #007bff;
+      color: white;
     }
     button:disabled {
-      background: #a9a9a9;
+      background: gray;
       cursor: not-allowed;
     }
-    .results {
-      margin-top: 22px;
-      text-align: left;
-    }
-    #resetButton {
-      background: #dc3545;
-      margin-top: 12px;
+    #results {
+      margin-top: 30px;
+      font-size: 18px;
     }
   </style>
 </head>
 <body>
-  <div class="poll-box">
-    <h2>¿Irás a la sesión de este Viernes?</h2>
-    <form id="pollForm">
-      <label>
-        <input type="radio" name="vote" value="yes"> Iré a la sesión de este Viernes
-      </label>
-      <label>
-        <input type="radio" name="vote" value="no"> No iré a la sesión de este Viernes
-      </label>
-      <button type="submit" id="voteButton">Votar</button>
-    </form>
+  <h1>¿Irás a la sesión de este viernes?</h1>
 
-    <div class="results" id="results">
-      <h3>Resultados:</h3>
-      <p id="yesVotes">Iré: 0 votos</p>
-      <p id="noVotes">No iré: 0 votos</p>
-    </div>
+  <button id="yesBtn">Iré a la sesión</button>
+  <button id="noBtn">No iré a la sesión</button>
 
-    <button id="resetButton">Reiniciar votos</button>
-  </div>
+  <div id="results"></div>
 
   <script>
-    const form = document.getElementById("pollForm");
-    const voteButton = document.getElementById("voteButton");
-    const yesVotesEl = document.getElementById("yesVotes");
-    const noVotesEl = document.getElementById("noVotes");
-    const resetButton = document.getElementById("resetButton");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const resultsDiv = document.getElementById("results");
 
-    // Fetch current counts
-    async function fetchCounts() {
-      const res = await fetch("/poll");
+    // Fetch and display current votes
+    async function fetchVotes() {
+      const res = await fetch("/votes");
       const data = await res.json();
-      updateUI(data);
+      resultsDiv.innerHTML = `
+        ✅ Iré a la sesión: <b>${data.yes}</b><br>
+        ❌ No iré a la sesión: <b>${data.no}</b>
+      `;
     }
 
-    function updateUI(data) {
-      yesVotesEl.textContent = `Iré: ${data.yes} voto${data.yes === 1 ? "" : "s"}`;
-      noVotesEl.textContent = `No iré: ${data.no} voto${data.no === 1 ? "" : "s"}`;
-    }
-
-    form.addEventListener("submit", async e => {
-      e.preventDefault();
-      const choice = document.querySelector('input[name="vote"]:checked');
-      if (!choice) {
-        alert("Por favor selecciona una opción antes de votar.");
-        return;
-      }
+    // Send a vote
+    async function sendVote(choice) {
       const res = await fetch("/vote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ option: choice.value })
+        body: JSON.stringify({ choice })
       });
       const data = await res.json();
-      updateUI(data);
-      form.reset();
+      fetchVotes();
+    }
+
+    // Prevent multiple votes using localStorage
+    function checkVoted() {
+      return localStorage.getItem("voted");
+    }
+
+    function disableButtons() {
+      yesBtn.disabled = true;
+      noBtn.disabled = true;
+    }
+
+    yesBtn.addEventListener("click", () => {
+      if (!checkVoted()) {
+        sendVote("yes");
+        localStorage.setItem("voted", "yes");
+        disableButtons();
+      }
     });
 
-    resetButton.addEventListener("click", async () => {
-      if (!confirm("¿Seguro que quieres reiniciar la encuesta?")) return;
-      const res = await fetch("/reset", { method: "POST" });
-      const data = await res.json();
-      updateUI(data);
+    noBtn.addEventListener("click", () => {
+      if (!checkVoted()) {
+        sendVote("no");
+        localStorage.setItem("voted", "no");
+        disableButtons();
+      }
     });
 
-    // Load counts on page load
-    fetchCounts();
+    // On page load
+    window.onload = () => {
+      fetchVotes();
+      if (checkVoted()) disableButtons();
+    };
   </script>
 </body>
 </html>
