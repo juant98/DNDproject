@@ -21,7 +21,7 @@
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
     const resultsDiv = document.getElementById('results');
-    
+
     async function fetchVotes() {
       const res = await fetch('/votes');
       const data = await res.json();
@@ -36,10 +36,7 @@
       });
       fetchVotes();
     }
-    function enablebuttons() {
-        yesBtn.disabled = false;
-        noBtn.disabled = false;
-    }
+
     function hasVoted() {
       return localStorage.getItem('voted');
     }
@@ -48,15 +45,6 @@
       yesBtn.disabled = true;
       noBtn.disabled = true;
     }
-
-    const resetVoteBtn = document.getElementById('resetVoteBtn');
-     resetVoteBtn.addEventListener('click', () => {
-      // Remove the "voted" flag
-      localStorage.removeItem('voted');
-      //call function to enable buttons
-      enablebuttons()
-       alert("Ahora puedes votar de nuevo!");
-    });
 
     yesBtn.addEventListener('click', () => {
       if (!hasVoted()) {
@@ -78,11 +66,6 @@
       fetchVotes();
       if (hasVoted()) disableButtons();
     };
-
   </script>
-  <button id="resetVoteBtn" style="background: #dc3545; color: white; margin-top: 10px;">
-  Reiniciar mi voto
-</button>
-
 </body>
 </html>
