@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 const votesFile = path.join(__dirname, "votes.json");
 
 app.use(express.json());
-app.use(express.static("public"));
+app.use(express.static("Public"));
 
 // Ensure votes.json exists with default values
 if (!fs.existsSync(votesFile)) {
