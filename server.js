@@ -54,12 +54,12 @@ app.post("/reset", (req, res) => {
 
 // --- ADD THIS ---
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.HTML'));
 });
 
 // Optional: catch-all for other routes
 app.get('/^\/.*$/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.HTML'));
 });
 
 app.listen(PORT, () => {
