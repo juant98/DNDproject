@@ -10,24 +10,8 @@
     button { margin: 10px; padding: 12px 24px; font-size: 16px; cursor: pointer; border-radius: 5px; border: none; }
     button:disabled { background: #ccc; cursor: not-allowed; }
     #results { margin-top: 30px; font-size: 18px; }
-    section#Video-Background {
-     position: relative;
-     right: 0;
-     bottom: 0;
-     min-width: 100%; 
-     min-height: 100%;
-     z-index: -1;
-     display: flex;
-     }
-     section#Video-Background video {
-     position: absolute;
-     right: 0;
-     bottom: 0;
-     min-width: 100%; 
-     min-height: 100%;
-     z-index: -1;
-     object-fit: cover;
-     }
+
+
   </style>
 </head>
 <body>
@@ -35,9 +19,6 @@
   <button id="yesBtn">Iré a la sesión</button>
   <button id="noBtn">No iré a la sesión</button>
   <button id="resetVoteBtn" style="background: #dc3545; color: white;">Reiniciar mi voto</button>
-<section id="Video-Background">
-  <video muted autoplay loop src="DODRK.mp4"></video>
-</section>
   <div id="results"></div>
 
   <script>
