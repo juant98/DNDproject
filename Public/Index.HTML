@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Encuesta – Sesión del Viernes</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f9; text-align: center; padding: 40px; }
+    h1 { color: #333; }
+    button { margin: 10px; padding: 12px 24px; font-size: 16px; cursor: pointer; border-radius: 5px; border: none; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    #results { margin-top: 30px; font-size: 18px; }
+  </style>
+</head>
+<body>
+  <h1>¿Irás a la sesión de este viernes?</h1>
+  <button id="yesBtn">Iré a la sesión</button>
+  <button id="noBtn">No iré a la sesión</button>
+  <div id="results"></div>
+
+  <script>
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+    const resultsDiv = document.getElementById('results');
+
+    async function fetchVotes() {
+      const res = await fetch('/votes');
+      const data = await res.json();
+      resultsDiv.innerHTML = `✅ Iré: <b>${data.yes}</b><br>❌ No iré: <b>${data.no}</b>`;
+    }
+
+    async function sendVote(choice) {
+      await fetch('/vote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ choice })
+      });
+      fetchVotes();
+    }
+
+    function hasVoted() {
+      return localStorage.getItem('voted');
+    }
+
+    function disableButtons() {
+      yesBtn.disabled = true;
+      noBtn.disabled = true;
+    }
+
+    yesBtn.addEventListener('click', () => {
+      if (!hasVoted()) {
+        sendVote('yes');
+        localStorage.setItem('voted', 'yes');
+        disableButtons();
+      }
+    });
+
+    noBtn.addEventListener('click', () => {
+      if (!hasVoted()) {
+        sendVote('no');
+        localStorage.setItem('voted', 'no');
+        disableButtons();
+      }
+    });
+
+    window.onload = () => {
+      fetchVotes();
+      if (hasVoted()) disableButtons();
+    };
+  </script>
+</body>
+</html>
