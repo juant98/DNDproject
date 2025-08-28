@@ -23,6 +23,13 @@
     const resultsDiv = document.getElementById('results');
     const resetVoteBtn = document.getElementById('resetVoteBtn');
 
+     resetVoteBtn.addEventListener('click', () => {
+      // Remove the "voted" flag
+      localStorage.removeItem('voted');
+      //call function to enable buttons
+      enablebuttons()
+       alert("Ahora puedes votar de nuevo!");
+    });
     async function fetchVotes() {
       const res = await fetch('/votes');
       const data = await res.json();
@@ -37,7 +44,10 @@
       });
       fetchVotes();
     }
-
+    function enablebuttons() {
+        yesBtn.disabled = false;
+        noBtn.disabled = false;
+    }
     function hasVoted() {
       return localStorage.getItem('voted');
     }
@@ -67,19 +77,7 @@
       fetchVotes();
       if (hasVoted()) disableButtons();
     };
-    resetVoteBtn.addEventListener('click', () => {
-  // Remove the "voted" flag
-  localStorage.removeItem('voted');
 
-  // Re-enable the vote buttons
-  yesBtn.disabled = false;
-  noBtn.disabled = false;
-
-  // Optionally, clear any selection
-  // (if you had radio buttons, you'd reset them here)
-
-  alert("Ahora puedes votar de nuevo!");
-});
   </script>
   <button id="resetVoteBtn" style="background: #dc3545; color: white; margin-top: 10px;">
   Reiniciar mi voto
