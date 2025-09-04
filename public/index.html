@@ -4,21 +4,72 @@
   <meta charset="UTF-8">
   <title>Sesión del Viernes</title>
   <style>
-    body { font-family: Arial, Helvetica, sans-serif; background: #6c188d; text-align: center; padding: 40px; }
-    h1 { color: #333; }
-    button { margin: 10px; padding: 12px 24px; font-size: 16px; cursor: pointer; border-radius: 5px; border: none; }
-    button:disabled { background: #ccc; cursor: not-allowed; }
-    #results { margin-top: 30px; font-size: 18px; }
+    /* Video background */
+    #myVideo {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
+      z-index: -1; /* sit behind everything */
+    }
+
+    /* Container for all content */
+    .content {
+      position: relative;      /* allows z-index to work */
+      z-index: 2;              /* above the video */
+      text-align: center;
+      color: white;            /* text color to contrast video */
+      font-family: Arial, Helvetica, sans-serif;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #fff;
+      text-shadow: 1px 1px 4px #000; /* make it pop */
+    }
+
+    button {
+      margin: 10px;
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      border: none;
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    #results {
+      margin-top: 30px;
+      font-size: 18px;
+    }
+
+    /* Optional styling for the reset button */
+    #resetVoteBtn {
+      background: #dc3545;
+      color: white;
+    }
   </style>
 </head>
 <body>
-  <h1>¿Irás a la sesión de este viernes?</h1>
-  <button id="yesBtn">Iré a la sesión</button>
-  <button id="noBtn">No iré a la sesión</button>
-  <!-- New reset button -->
-  <button id="resetVoteBtn" style="background: #dc3545; color: white;">Reiniciar mi voto</button>
+  <!-- Video background -->
+  <video autoplay muted loop id="myVideo">
+    <source src="Drakken.mp4" type="video/mp4">
+  </video>
 
-  <div id="results"></div>
+  <!-- All content sits in this container -->
+  <div class="content">
+    <h1>¿Irás a la sesión de este viernes?</h1>
+    <button id="yesBtn">Iré a la sesión</button>
+    <button id="noBtn">No iré a la sesión</button>
+    <button id="resetVoteBtn">Reiniciar mi voto</button>
+
+    <div id="results"></div>
+  </div>
 
   <script>
     const yesBtn = document.getElementById('yesBtn');
@@ -66,7 +117,6 @@
       }
     });
 
-    // --- New reset button logic ---
     resetVoteBtn.addEventListener('click', () => {
       localStorage.removeItem('voted'); // Clear vote flag
       yesBtn.disabled = false;

@@ -8,24 +8,30 @@ const PORT = process.env.PORT || 3000;
 // Path to votes file
 const votesFile = path.join(__dirname, "votes.json");
 
+// Middleware
 app.use(express.json());
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "public")));
 
-// Ensure votes.json exists with default values
+// Ensure votes.json exists
 if (!fs.existsSync(votesFile)) {
   fs.writeFileSync(votesFile, JSON.stringify({ yes: 0, no: 0 }, null, 2));
   console.log("✅ votes.json created with initial values.");
 }
 
-// Get current votes
+// === API ROUTES ===
+
+// GET current votes
 app.get("/votes", (req, res) => {
   fs.readFile(votesFile, "utf8", (err, data) => {
-    if (err) return res.status(500).json({ error: "Error reading votes" });
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Error reading votes" });
+    }
     res.json(JSON.parse(data));
   });
 });
 
-// Cast a vote
+// POST cast a vote
 app.post("/vote", (req, res) => {
   const choice = req.body.choice;
 
@@ -43,7 +49,7 @@ app.post("/vote", (req, res) => {
   });
 });
 
-// Reset votes
+// POST reset votes
 app.post("/reset", (req, res) => {
   const resetVotes = { yes: 0, no: 0 };
   fs.writeFile(votesFile, JSON.stringify(resetVotes, null, 2), (err) => {
@@ -52,13 +58,7 @@ app.post("/reset", (req, res) => {
   });
 });
 
-
-// Optional: catch-all for other routes
-app.get(/^\/.*/, (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-
+// Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
