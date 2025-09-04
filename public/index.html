@@ -6,13 +6,16 @@
   <style>
     /* Video background */
     #myVideo {
-      position: fixed;
-      right: 0;
-      bottom: 0;
-      min-width: 100%;
-      min-height: 100%;
-      object-fit: cover;
-      z-index: -1; /* sit behind everything */
+     position: fixed;
+     top: 50%;
+     left: 50%;
+     min-width: 100%;
+     min-height: 100%;
+     width: auto;
+     height: auto;
+     transform: translate(-50%, -50%);
+     object-fit: cover; /* ensures proper scaling */
+     z-index: -1;
     }
 
     /* Container for all content */
